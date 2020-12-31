@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["gunicorn", "bang.app:app", "--bind", ":8888"]
+    ports:
+      - 8888:8888
+
