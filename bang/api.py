@@ -1,11 +1,19 @@
+"""BangAPI
+
+This is the core for Bang web apps.
+"""
+
 
 from webob import Request, Response
 
+
 class BangAPI(object):
+    """BangAPI is the WSGI compatible class for handling web requests.
+
+    """
     def __call__(self, environ, start_response):
         request = Request(environ)
-
-        response = self.handle_request(request) 
+        response = self.handle_request(request)
         return response(environ, start_response)
 
     def handle_request(self, request: Request) -> Response:
