@@ -8,7 +8,6 @@ from typing import Dict, Callable, NewType
 from parse import parse
 from webob import Request, Response
 
-
 Handler = NewType('Handler', Callable[[Request], Response])
 
 
@@ -26,6 +25,9 @@ class BangAPI:
 
 
     def route(self, path: str):
+        if path in self.routes:
+            raise AttributeError(f"Route for path {path} already exists.")
+
         def wrapper(handler: Handler):
             self.routes[path] = handler
             return handler
