@@ -1,7 +1,4 @@
 
-def app(environ, start_response):
-    response_body = b'Hello, World!'
-    status = "200 ok"
-    start_response(status, headers=[])
-    return iter([response_body])
+from .api import BangAPI
 
+app = BangAPI()
