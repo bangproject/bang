@@ -3,23 +3,36 @@
 This is the core for Bang web apps.
 """
 
+from typing import Dict, Callable, NewType
 
 from webob import Request, Response
 
 
-class BangAPI(object):
+Handler = NewType('Handler', Callable[[Request], Response])
+
+
+class BangAPI:
     """BangAPI is the WSGI compatible class for handling web requests.
 
     """
+    routes: Dict[str, Handler] = {}
+
     def __call__(self, environ, start_response):
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
 
+    def route(self, path: str):
+        def wrapper(handler: Handler):
+            self.routes[path] = handler
+            return handler
+
+        return wrapper
+
     def handle_request(self, request: Request) -> Response:
-        user_agent = request.environ.get("HTTP_USER_AGENT", "No user agent found.")
-
         response = Response()
-        response.text = f"Your user-agent is {user_agent}."
-
-        return response
+        print(self.routes)
+        for path, handler in self.routes.items():
+            if path == request.path:
+                handler(request, response)
+                return response
