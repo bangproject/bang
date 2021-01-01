@@ -5,7 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: ["gunicorn", "bang.app:app", "--bind", ":8888"]
+    volumes:
+      - .:/app
+    command: ["gunicorn", "bang.app:app", "--bind", ":8888", "--reload"]
     ports:
       - 8888:8888
 
