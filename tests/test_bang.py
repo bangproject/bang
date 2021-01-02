@@ -3,9 +3,15 @@ from bang.api import BangAPI
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def app():
     return BangAPI()
+
+
+def test_basic_route_adding(app):
+    @app.route("/basic")
+    def home(req, resp):
+        resp.text = "YOLO"
 
 
 def test_no_duplicate_routes(app):
@@ -17,5 +23,3 @@ def test_no_duplicate_routes(app):
         @app.route("/home")
         def home2(req, resp):
             resp.text = "Not again"
-
-    
