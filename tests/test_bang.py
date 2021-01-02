@@ -11,7 +11,7 @@ def test_basic_route_adding(app):
         resp.text = "YOLO"
 
 
-def test_no_duplicate_routes(app):
+def test_duplicate_routes_throws_exception(app):
     @app.route("/home")
     def home(req, resp):
         resp.text = "YOLO"
@@ -39,6 +39,7 @@ def test_parameterized_route(app, client):
         resp.text = f"Hello, {name}"
 
     assert client.get("http://testserver/hello/Nathan").text == "Hello, Nathan"
+    assert client.get("http://testserver/hello/Beast").text == "Hello, Beast"
 
 
 def test_default_404_response(client):
@@ -46,3 +47,32 @@ def test_default_404_response(client):
 
     assert response.status_code == 404
     assert response.text == "Not found."
+
+
+def test_class_based_handler_get(app, client):
+    @app.route("/book")
+    class BookResource:
+        def get(self, req, resp):
+            resp.text = "get"
+
+    assert client.get("http://testserver/book").text == "get"
+
+
+def test_class_based_handler_post(app, client):
+    @app.route("/person")
+    class PersonResource:
+        def post(self, req, resp):
+            resp.text = "post"
+
+    assert client.post("http://testserver/person").text == "post"
+
+
+def test_class_based_handler_not_allowed(app, client):
+    @app.route("/wookie")
+    class PersonResource:
+        def post(self, req, resp):
+            resp.text = "post"
+
+    # and undefined method raises
+    with pytest.raises(AttributeError):
+        client.get("http://testserver/wookie").text
