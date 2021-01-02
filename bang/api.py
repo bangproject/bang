@@ -4,12 +4,13 @@ This is the core for Bang web apps.
 """
 import inspect
 
-from typing import Dict, Callable, NewType
+from typing import Dict, Callable
 
 from parse import parse
 from webob import Request, Response
 
-Handler = NewType('Handler', Callable[[Request], Response])
+Handler = Callable[[Request], Response]
+
 
 class BangAPI:
     """BangAPI is the WSGI compatible class for handling web requests.
@@ -17,12 +18,10 @@ class BangAPI:
     """
     routes: Dict[str, Handler] = {}
 
-
     def __call__(self, environ, start_response):
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
-
 
     def route(self, path: str):
         if path in self.routes:
@@ -34,11 +33,9 @@ class BangAPI:
 
         return wrapper
 
-
     def default_response(self, response):
         response.status_code = 404
         response.text = "Not found."
-
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
@@ -47,7 +44,6 @@ class BangAPI:
                 return handler, parse_result.named
 
         return None, None
-
 
     def handle_request(self, request):
         response = Response()
@@ -64,8 +60,3 @@ class BangAPI:
             self.default_response(response)
 
         return response
-
-
-    def default_response(self, response):
-        response.status_code = 404
-        response.text = "Not found."

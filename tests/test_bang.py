@@ -1,6 +1,6 @@
 """Framework tests.
 
-Test the App framework. 
+Test the App framework.
 """
 import pytest
 
@@ -17,6 +17,7 @@ def test_no_duplicate_routes(app):
         resp.text = "YOLO"
 
     with pytest.raises(AttributeError):
+
         @app.route("/home")
         def home2(req, resp):
             resp.text = "Not again"
@@ -31,7 +32,7 @@ def test_bang_test_client_can_send_requests(app, client):
 
     assert client.get("http://testserver/hey").text == RESPONSE_TEXT
 
-    
+
 def test_parameterized_route(app, client):
     @app.route("/hello/{name}")
     def hello(req, resp, name):
