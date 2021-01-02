@@ -76,3 +76,11 @@ def test_class_based_handler_not_allowed(app, client):
     # and undefined method raises
     with pytest.raises(AttributeError):
         client.get("http://testserver/wookie").text
+
+
+def test_add_route(app, client):
+    def do_handle(req, resp):
+        resp.text = "Route add method"
+
+    app.add_route("/chewbaca", do_handle)
+    assert client.get("http://testserver/chewbaca").text == "Route add method"
