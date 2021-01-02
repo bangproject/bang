@@ -4,7 +4,6 @@ Defines fixtures in a conventional filename for automatic discovery and instanti
 during the test collection phase.
 """
 import pytest
-
 from requests import Session as RequestsSession
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 

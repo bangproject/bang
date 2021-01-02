@@ -3,8 +3,7 @@
 This is the core for Bang web apps.
 """
 import inspect
-
-from typing import Dict, Callable
+from typing import Callable, Dict
 
 from parse import parse
 from webob import Request, Response
