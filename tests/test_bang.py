@@ -3,7 +3,7 @@ from bang.api import BangAPI
 import pytest
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def app():
     return BangAPI()
 
