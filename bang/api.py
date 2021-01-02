@@ -28,11 +28,8 @@ class BangAPI:
         self.routes[path] = handler
 
     def route(self, path: str):
-        if path in self.routes:
-            raise AttributeError(f"Route for path {path} already exists.")
-
         def wrapper(handler: Handler):
-            self.routes[path] = handler
+            self.add_route(path, handler)
             return handler
 
         return wrapper
