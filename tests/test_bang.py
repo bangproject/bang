@@ -31,9 +31,11 @@ def test_bang_test_client_can_send_requests(app, client):
 
     assert client.get("http://testserver/hey").text == RESPONSE_TEXT
 
-#def test_parameterized_route(app, client):
-#    @app.route("/hello/{name}")
-#    def hello(req, resp, name):
-#        resp.text = f"Hello, {name}"
+    
+def test_parameterized_route(app, client):
+    @app.route("/hello/{name}")
+    def hello(req, resp, name):
+        resp.text = f"Hello, {name}"
 
-#    assert client.get("http://testserver/Nathan").text == "Hello, Nathan"
+    assert client.get("http://testserver/hello/Nathan").text == "Hello, Nathan"
+
