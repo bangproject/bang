@@ -11,19 +11,16 @@ from webob import Request, Response
 
 Handler = NewType('Handler', Callable[[Request], Response])
 
-
 class BangAPI:
     """BangAPI is the WSGI compatible class for handling web requests.
 
     """
     routes: Dict[str, Handler] = {}
 
-
     def __call__(self, environ, start_response):
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
-
 
     def route(self, path: str):
         if path in self.routes:
