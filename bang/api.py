@@ -17,10 +17,12 @@ class BangAPI:
     """
     routes: Dict[str, Handler] = {}
 
+
     def __call__(self, environ, start_response):
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
+
 
     def route(self, path: str):
         if path in self.routes:
