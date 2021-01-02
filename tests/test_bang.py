@@ -3,11 +3,6 @@ from bang.api import BangAPI
 import pytest
 
 
-@pytest.fixture
-def app():
-    return BangAPI()
-
-
 def test_basic_route_adding(app):
     @app.route("/basic")
     def home(req, resp):
