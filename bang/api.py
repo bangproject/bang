@@ -22,6 +22,11 @@ class BangAPI:
         response = self.handle_request(request)
         return response(environ, start_response)
 
+    def add_route(self, path: str, handler: Handler):
+        if path in self.routes:
+            raise AttributeError(f"Route for path {path} already exists.")
+        self.routes[path] = handler
+
     def route(self, path: str):
         if path in self.routes:
             raise AttributeError(f"Route for path {path} already exists.")
