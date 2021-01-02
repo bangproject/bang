@@ -5,7 +5,7 @@ An inital demo user of our web app.
 
 from webob import Request, Response
 
-from .api import BangAPI
+from api import BangAPI
 
 app = BangAPI()
 
