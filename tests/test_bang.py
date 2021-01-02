@@ -46,3 +46,25 @@ def test_default_404_response(client):
 
     assert response.status_code == 404
     assert response.text == "Not found."
+
+
+def test_class_based_handler_get(app, client):
+    @app.route("/book")
+    class BookResource:
+        def get(self, req, resp):
+            resp.text = "get"
+
+    assert client.get("http://testserver/book").text == "get"
+
+
+def test_class_based_handler_post(app, client):
+    @app.route("/person")
+    class PersonResource:
+        def post(self, req, resp):
+            resp.text = "post"
+
+    assert client.post("http://testserver/person").text == "post"
+
+    # and undefined method raises
+    with pytest.raises(AttributeError):
+        client.get("http://testserver/person").text
