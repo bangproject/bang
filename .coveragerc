@@ -1,2 +1,2 @@
 [run]
-omit = tests/*,bang/conftest.py,bang/app.py
+omit = tests/*,bang/conftest.py,bang/app.py,scripts.py
