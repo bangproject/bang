@@ -2,6 +2,7 @@
 name = "bang"
 version = "0.1.0"
 description = "The framework that began history."
+readme = "README.md"
 authors = ["Nathan Slaughter <nslaughter@users.noreply.github.com>"]
 license = "MIT"
 
