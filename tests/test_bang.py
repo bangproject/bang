@@ -84,3 +84,19 @@ def test_add_route(app, client):
 
     app.add_route("/chewbaca", do_handle)
     assert client.get("http://testserver/chewbaca").text == "Route add method"
+
+
+def test_template(app, client):
+    @app.route("/html")
+    def html_handler(req, resp):
+        resp.body = app.template("index.html",
+                                 context={
+                                     "title": "Some Title",
+                                     "name": "Some Name"
+                                 }).encode()
+
+    response = client.get("http://testserver/html")
+
+    assert "text/html" in response.headers["Content-Type"]
+    assert "Some Title" in response.text
+    assert "Some Name" in response.text
