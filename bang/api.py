@@ -3,8 +3,10 @@
 This is the core for Bang web apps.
 """
 import inspect
+import os
 from typing import Callable, Dict
 
+from jinja2 import Environment, FileSystemLoader
 from parse import parse
 from webob import Request, Response
 
@@ -16,6 +18,13 @@ class BangAPI:
 
     """
     routes: Dict[str, Handler] = {}
+    templates_env: Environment = Environment(
+        loader=FileSystemLoader(os.path.abspath("bang/templates")))
+
+    def __init__(self, templates_dir: str = None):
+        if templates_dir is not None:
+            self.templates_env = Environment(
+                loader=FileSystemLoader(os.path.abspath(templates_dir)))
 
     def __call__(self, environ, start_response):
         request = Request(environ)
@@ -61,3 +70,9 @@ class BangAPI:
             self.default_response(response)
 
         return response
+
+    def template(self, template_name, context=None):
+        if context is None:
+            context = {}
+
+        return self.templates_env.get_template(template_name).render(**context)
