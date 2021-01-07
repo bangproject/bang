@@ -103,7 +103,7 @@ def test_template(app, client):
 
 
 def test_custom_exception_handler(app, client):
-    def on_exception(req, rep, exc):
+    def on_exception(req, resp, exc):
         resp.text = "AttributeErrorHappened"
 
     app.add_exception_handler(on_exception)
@@ -112,6 +112,6 @@ def test_custom_exception_handler(app, client):
     def index(req, resp):
         raise AttributeError()
 
-    response client.get("http://testserver/")
+    response = client.get("http://testserver/")
 
     assert response.text == "AttributeErrorHappened"
