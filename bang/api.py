@@ -27,8 +27,6 @@ class BangAPI:
             self.templates_env = Environment(
                 loader=FileSystemLoader(os.path.abspath(templates_dir)))
 
-        # self.exception_handler = None
-
     def __call__(self, environ, start_response):
         request = Request(environ)
         response = self.handle_request(request)
