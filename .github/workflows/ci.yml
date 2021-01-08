@@ -53,11 +53,7 @@ jobs:
         run: python -m poetry install
 
       - name: Code Quality
-        run: python -m poetry run flake8
+        run: poetry run flake8
 
       - name: Test with pytest
         run: poetry run pytest --cov .
-
-      - name: Run pytest
-        shell: bash
-        run: python -m poetry run python -m pytest -v --cov .
