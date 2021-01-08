@@ -20,6 +20,7 @@ class BangAPI:
     routes: Dict[str, Handler] = {}
     templates_env: Environment = Environment(
         loader=FileSystemLoader(os.path.abspath("bang/templates")))
+    exception_handler = None
 
     def __init__(self, templates_dir: str = None):
         if templates_dir is not None:
@@ -60,14 +61,21 @@ class BangAPI:
 
         handler, kwargs = self.find_handler(request_path=request.path)
 
-        if handler is not None:
-            if inspect.isclass(handler):
-                handler = getattr(handler(), request.method.lower(), None)
-                if handler is None:
-                    raise AttributeError("Method not allowed", request.method)
-            handler(request, response, **kwargs)
-        else:
-            self.default_response(response)
+        try:
+            if handler is not None:
+                if inspect.isclass(handler):
+                    handler = getattr(handler(), request.method.lower(), None)
+                    if handler is None:
+                        raise AttributeError("Method not allowed", request.method)
+                handler(request, response, **kwargs)
+            else:
+                self.default_response(response)
+        except Exception as e:
+            if self.exception_handler is None:
+                print("self.exception_handler is None")
+                raise e
+            else:
+                self.exception_handler(request, response, e)
 
         return response
 
@@ -76,3 +84,6 @@ class BangAPI:
             context = {}
 
         return self.templates_env.get_template(template_name).render(**context)
+
+    def add_exception_handler(self, exception_handler):
+        self.exception_handler = exception_handler
