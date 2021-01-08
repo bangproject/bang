@@ -4,6 +4,8 @@ exclude =
     .git,
     # No value in checking cache directories
     __pycache__
+    # Even if local doesn't use .venv needed for Gitub Actions
+    .venv
 max-line-length = 100
 max-complexity = 10
 indent-string="    "
