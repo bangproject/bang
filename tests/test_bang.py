@@ -152,7 +152,7 @@ def test_assets_are_served(tmpdir_factory):
     assert response.status_code == 200
     assert response.text == FILE_CONTENTS
 
-    
+
 def test_middleware_methods_are_called(app, client):
     process_request_called = False
     process_response_called = False
