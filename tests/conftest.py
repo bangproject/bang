@@ -9,16 +9,10 @@ from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 from bang.api import BangAPI
 
-#import os
-
-#@pytest.fixture
-#def pytest_generate_tests(metafunc):
-#    os.environ['WHITENOISE_AUTOREFRESH'] = True
 
 class FixtureAPI(BangAPI):
     def __init__(self, static_dir="static"):
         super().__init__(static_dir=static_dir)
-
 
     def test_session(self, base_url="http://testserver"):
         session = RequestsSession()

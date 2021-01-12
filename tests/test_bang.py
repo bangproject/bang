@@ -4,8 +4,6 @@ Test the App framework.
 """
 import pytest
 
-from bang.api import BangAPI
-
 from .conftest import FixtureAPI
 
 FILE_DIR = "css"
@@ -137,7 +135,7 @@ def test_custom_exception_handler(app, client):
 
 
 def test_404_is_returned_for_nonexistent_static_file(client):
-    assert client.get(f"http://testserver/main.css)").status_code == 404
+    assert client.get("http://testserver/main.css)").status_code == 404
 
 
 def test_assets_are_served(tmpdir_factory):
