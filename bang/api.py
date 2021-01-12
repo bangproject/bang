@@ -9,6 +9,7 @@ from typing import Callable, Dict
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
 from webob import Request, Response
+from whitenoise import WhiteNoise
 
 Handler = Callable[[Request], Response]
 
@@ -22,12 +23,16 @@ class BangAPI:
         loader=FileSystemLoader(os.path.abspath("bang/templates")))
     exception_handler = None
 
-    def __init__(self, templates_dir: str = None):
+    def __init__(self, templates_dir: str = None, static_dir="static"):
         if templates_dir is not None:
             self.templates_env = Environment(
                 loader=FileSystemLoader(os.path.abspath(templates_dir)))
+        self.whitenoise = WhiteNoise(self.wsgi_app, root=static_dir)
 
     def __call__(self, environ, start_response):
+        return self.whitenoise(environ, start_response)
+
+    def wsgi_app(self, environ, start_response):
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
