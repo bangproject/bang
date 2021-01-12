@@ -9,8 +9,17 @@ from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 from bang.api import BangAPI
 
+#import os
 
-class TestAPI(BangAPI):
+#@pytest.fixture
+#def pytest_generate_tests(metafunc):
+#    os.environ['WHITENOISE_AUTOREFRESH'] = True
+
+class FixtureAPI(BangAPI):
+    def __init__(self, static_dir="static"):
+        super().__init__(static_dir=static_dir)
+
+
     def test_session(self, base_url="http://testserver"):
         session = RequestsSession()
         session.mount(prefix=base_url, adapter=RequestsWSGIAdapter(self))
@@ -20,7 +29,7 @@ class TestAPI(BangAPI):
 @pytest.fixture
 def app():
     """A version of the API that includes a test_session method."""
-    return TestAPI()
+    return FixtureAPI()
 
 
 @pytest.fixture
