@@ -77,7 +77,6 @@ class BangAPI:
                 self.default_response(response)
         except Exception as e:
             if self.exception_handler is None:
-                print("self.exception_handler is None")
                 raise e
             else:
                 self.exception_handler(request, response, e)
