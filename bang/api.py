@@ -12,6 +12,7 @@ from webob import Request, Response
 from whitenoise import WhiteNoise
 
 from .middleware import Middleware
+from .response import Response
 
 Handler = Callable[[Request], Response]
 
