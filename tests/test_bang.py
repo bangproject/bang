@@ -195,6 +195,7 @@ def test_disallow_unhandled_methods_for_function_handlers(app, client):
 
     assert client.post("http://testserver/home3").text == "hello"
 
+
 def test_json_response_helper(app, client):
     @app.route("/json")
     def json_handler(req, resp):
@@ -210,7 +211,11 @@ def test_json_response_helper(app, client):
 def test_html_response_helper(app, client):
     @app.route("/html2")
     def html_handler(req, resp):
-        resp.html = app.template("index.html", context={"title": "Best Title", "name": "Best Name"})
+        resp.html = app.template("index.html",
+                                 context={
+                                     "title": "Best Title",
+                                     "name": "Best Name"
+                                 })
 
     response = client.get("http://testserver/html2")
 

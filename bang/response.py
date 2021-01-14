@@ -4,24 +4,26 @@ The bang Response type should be natural to anyone familiar with HTTP.
 """
 import json
 from dataclasses import dataclass
+from typing import Optional
 
 from webob import Response as WOResponse
 
+
 @dataclass
 class Response:
-    status_code: int = None
-    reason_phrase: str = None
-    json: str = None
-    html: str = None
-    text: str = None
-    content_type: str = None
+    status_code: Optional[int] = None
+    reason_phrase: Optional[str] = None
+    json: Optional[str] = None
+    html: Optional[str] = None
+    text: Optional[str] = None
+    content_type: Optional[str] = None
     body: bytes = b''
 
     def __call__(self, environ, start_response):
         self.set_body_and_content_type()
-        response = WOResponse(
-            body=self.body, content_type=self.content_type, status=self.status_code
-        )
+        response = WOResponse(body=self.body,
+                              content_type=self.content_type,
+                              status=self.status_code)
         return response(environ, start_response)
 
     def set_body_and_content_type(self):
