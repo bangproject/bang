@@ -4,7 +4,7 @@ This is the core for Bang web apps.
 """
 import inspect
 import os
-from typing import Callable, Dict, List
+from typing import Any, Callable, Dict
 
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
@@ -13,15 +13,14 @@ from whitenoise import WhiteNoise
 
 from .middleware import Middleware
 
-
 Handler = Callable[[Request], Response]
 
-    
+
 class BangAPI:
     """BangAPI is the WSGI compatible class for handling web requests.
 
     """
-    routes: Dict[str, Handler] = {}
+    routes: Dict[str, Dict[str, Any]] = {}
     templates_env: Environment = Environment(
         loader=FileSystemLoader(os.path.abspath("bang/templates")))
     exception_handler = None
@@ -52,9 +51,14 @@ class BangAPI:
             raise AttributeError(f"Route for path {path} already exists.")
 
         if allowed_methods is None:
-            allowed_methods = ['get', 'post', 'put', 'patch', 'delete', 'options']
+            allowed_methods = [
+                'get', 'post', 'put', 'patch', 'delete', 'options'
+            ]
 
-        self.routes[path] = {"handler": handler, "allowed_methods": allowed_methods}
+        self.routes[path] = {
+            "handler": handler,
+            "allowed_methods": allowed_methods
+        }
 
     def route(self, path: str, allowed_methods=None):
         def wrapper(handler: Handler):
@@ -87,7 +91,8 @@ class BangAPI:
                 if inspect.isclass(handler):
                     handler = getattr(handler(), request.method.lower(), None)
                     if handler is None:
-                        raise AttributeError("Method not allowed", request.method)
+                        raise AttributeError("Method not allowed",
+                                             request.method)
                 elif request.method.lower() not in allowed_methods:
                     raise AttributeError("Method not allowed", request.method)
                 handler(request, response, **kwargs)
