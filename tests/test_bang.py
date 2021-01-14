@@ -181,3 +181,14 @@ def test_middleware_methods_are_called(app, client):
 
     assert process_request_called is True
     assert process_response_called is True
+
+    
+def test_disallow_unhandled_methods_for_function_handlers(app, client):
+    @app.route("/home3", allowed_methods=["post"])
+    def home(req, resp):
+        resp.text = "hello"
+
+    with pytest.raises(AttributeError):
+        client.get("http://testserver/home3")
+
+    assert client.post("http://testserver/home3").text == "hello"
