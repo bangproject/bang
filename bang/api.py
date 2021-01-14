@@ -4,7 +4,7 @@ This is the core for Bang web apps.
 """
 import inspect
 import os
-from typing import Callable, Dict
+from typing import Any, Callable, Dict
 
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
@@ -13,7 +13,6 @@ from whitenoise import WhiteNoise
 
 from .middleware import Middleware
 
-
 Handler = Callable[[Request], Response]
 
 
@@ -21,7 +20,7 @@ class BangAPI:
     """BangAPI is the WSGI compatible class for handling web requests.
 
     """
-    routes: Dict[str, Handler] = {}
+    routes: Dict[str, Dict[str, Any]] = {}
     templates_env: Environment = Environment(
         loader=FileSystemLoader(os.path.abspath("bang/templates")))
     exception_handler = None
@@ -47,14 +46,23 @@ class BangAPI:
         response = self.handle_request(request)
         return response(environ, start_response)
 
-    def add_route(self, path: str, handler: Handler):
+    def add_route(self, path: str, handler: Handler, allowed_methods=None):
         if path in self.routes:
             raise AttributeError(f"Route for path {path} already exists.")
-        self.routes[path] = handler
 
-    def route(self, path: str):
+        if allowed_methods is None:
+            allowed_methods = [
+                'get', 'post', 'put', 'patch', 'delete', 'options'
+            ]
+
+        self.routes[path] = {
+            "handler": handler,
+            "allowed_methods": allowed_methods
+        }
+
+    def route(self, path: str, allowed_methods=None):
         def wrapper(handler: Handler):
-            self.add_route(path, handler)
+            self.add_route(path, handler, allowed_methods)
             return handler
 
         return wrapper
@@ -64,24 +72,29 @@ class BangAPI:
         response.text = "Not found."
 
     def find_handler(self, request_path):
-        for path, handler in self.routes.items():
+        for path, handler_data in self.routes.items():
             parse_result = parse(path, request_path)
             if parse_result is not None:
-                return handler, parse_result.named
+                return handler_data, parse_result.named
 
         return None, None
 
     def handle_request(self, request):
         response = Response()
 
-        handler, kwargs = self.find_handler(request_path=request.path)
+        handler_data, kwargs = self.find_handler(request_path=request.path)
 
         try:
-            if handler is not None:
+            if handler_data is not None:
+                handler = handler_data["handler"]
+                allowed_methods = handler_data["allowed_methods"]
                 if inspect.isclass(handler):
                     handler = getattr(handler(), request.method.lower(), None)
                     if handler is None:
-                        raise AttributeError("Method not allowed", request.method)
+                        raise AttributeError("Method not allowed",
+                                             request.method)
+                elif request.method.lower() not in allowed_methods:
+                    raise AttributeError("Method not allowed", request.method)
                 handler(request, response, **kwargs)
             else:
                 self.default_response(response)

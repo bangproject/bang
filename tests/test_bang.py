@@ -3,18 +3,19 @@
 Test the App framework.
 """
 import pytest
-# from pytest.mock import create_autospec
 
-from .conftest import FixtureAPI
 from bang.middleware import Middleware
 
+from .conftest import FixtureAPI
+
+# from pytest.mock import create_autospec
 
 FILE_DIR = "css"
 FILE_NAME = "main.css"
 FILE_CONTENTS = "body {background-color: red}"
 
-
 # helpers
+
 
 def _create_static(static_dir):
     asset = static_dir.mkdir(FILE_DIR).join(FILE_NAME)
@@ -24,6 +25,7 @@ def _create_static(static_dir):
 
 
 # tests
+
 
 def test_basic_route_adding(app):
     @app.route("/basic")
@@ -181,3 +183,14 @@ def test_middleware_methods_are_called(app, client):
 
     assert process_request_called is True
     assert process_response_called is True
+
+
+def test_disallow_unhandled_methods_for_function_handlers(app, client):
+    @app.route("/home3", allowed_methods=["post"])
+    def home(req, resp):
+        resp.text = "hello"
+
+    with pytest.raises(AttributeError):
+        client.get("http://testserver/home3")
+
+    assert client.post("http://testserver/home3").text == "hello"
