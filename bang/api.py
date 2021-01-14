@@ -8,10 +8,11 @@ from typing import Any, Callable, Dict
 
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
-from webob import Request, Response
+from webob import Request
 from whitenoise import WhiteNoise
 
 from .middleware import Middleware
+from .response import Response
 
 Handler = Callable[[Request], Response]
 

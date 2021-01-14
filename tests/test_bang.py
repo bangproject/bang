@@ -194,3 +194,56 @@ def test_disallow_unhandled_methods_for_function_handlers(app, client):
         client.get("http://testserver/home3")
 
     assert client.post("http://testserver/home3").text == "hello"
+
+
+def test_json_response_helper(app, client):
+    @app.route("/json")
+    def json_handler(req, resp):
+        resp.json = {"name": "bang"}
+
+    response = client.get("http://testserver/json")
+    json_body = response.json()
+
+    assert response.headers["Content-Type"] == "application/json"
+    assert json_body["name"] == "bang"
+
+
+def test_html_response_helper(app, client):
+    @app.route("/html2")
+    def html_handler(req, resp):
+        resp.html = app.template("index.html",
+                                 context={
+                                     "title": "Best Title",
+                                     "name": "Best Name"
+                                 })
+
+    response = client.get("http://testserver/html2")
+
+    assert "text/html" in response.headers["Content-Type"]
+    assert "Best Title" in response.text
+    assert "Best Name" in response.text
+
+
+def test_text_response_helper(app, client):
+    response_text = "Just Plain Text"
+
+    @app.route("/text")
+    def text_handler(req, resp):
+        resp.text = response_text
+
+    response = client.get("http://testserver/text")
+
+    assert "text/plain" in response.headers["Content-Type"]
+    assert response.text == response_text
+
+
+def test_manually_setting_body(app, client):
+    @app.route("/body")
+    def text_handler(req, resp):
+        resp.body = b"Byte Body"
+        resp.content_type = "text/plain"
+
+    response = client.get("http://testserver/body")
+
+    assert "text/plain" in response.headers["Content-Type"]
+    assert response.text == "Byte Body"
